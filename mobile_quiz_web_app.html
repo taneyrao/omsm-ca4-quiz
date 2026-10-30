@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OMSM CA-4 Online Quiz Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .prevent-select {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between antialiased prevent-select">
+
+    <!-- Top Sticky Header -->
+    <header class="sticky top-0 z-30 bg-white border-b border-slate-200 shadow-sm px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <div class="bg-brand-600 text-white p-2 rounded-lg flex items-center justify-center w-9 h-9 font-bold text-lg">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+                <h1 class="text-xs sm:text-sm font-bold text-slate-900 leading-tight">SVPCET Exam Portal</h1>
+                <p id="headerSubtitle" class="text-[11px] text-slate-500">Course Code: 23II705T</p>
+            </div>
+        </div>
+
+        <!-- Timer & Violations Badge -->
+        <div id="headerStats" class="hidden flex items-center space-x-2">
+            <div id="tabWarningBadge" class="flex items-center space-x-1 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-semibold">
+                <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                <span>Violations: <strong id="warningCountText">0/3</strong></span>
+            </div>
+
+            <div id="timerBadge" class="flex items-center space-x-1.5 bg-slate-900 text-white px-3 py-1 rounded-full text-xs font-bold font-mono tracking-wider shadow-inner">
+                <i class="fa-regular fa-clock text-brand-500 animate-pulse"></i>
+                <span id="timerText">60:00</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="flex-grow max-w-2xl w-full mx-auto p-4 md:p-6 mb-20">
+
+        <!-- ================= PAGE 1: BASIC DETAILS REGISTRATION ================= -->
+        <section id="registrationPage" class="space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="text-center mb-6">
+                    <span class="inline-block p-3 bg-brand-50 text-brand-600 rounded-2xl mb-3 text-2xl">
+                        <i class="fa-solid fa-industry"></i>
+                    </span>
+                    <h2 class="text-lg font-bold text-slate-900">Operations Management for Smart Manufacturing</h2>
+                    <p class="text-xs text-brand-600 font-semibold mt-1">Continuous Assessment 4 (CA-4) | VII Sem IIoT</p>
+                </div>
+
+                <form id="studentForm" onsubmit="handleStartQuiz(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Student Name <span class="text-rose-500">*</span></label>
+                        <input type="text" id="studentName" required placeholder="Enter your full name" 
+                            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm transition-all">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">College UID <span class="text-rose-500">*</span></label>
+                            <input type="text" id="studentId" required placeholder="e.g. 20248910" 
+                                class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Phone Number <span class="text-rose-500">*</span></label>
+                            <input type="tel" id="studentPhone" required pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" placeholder="10-digit mobile number" 
+                                class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Email ID <span class="text-rose-500">*</span></label>
+                        <input type="email" id="studentEmail" required placeholder="student@svpcet.edu.in" 
+                            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-sm transition-all">
+                    </div>
+
+                    <!-- Exam Rules Summary -->
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-xs text-slate-600 space-y-2 mt-4">
+                        <p class="font-bold text-slate-800 flex items-center">
+                            <i class="fa-solid fa-shield-halved text-brand-600 mr-1.5"></i> Examination Protocol & Anti-Cheat Rules:
+                        </p>
+                        <ul class="list-disc pl-4 space-y-1 text-slate-600">
+                            <li>Total Questions: <strong>100 MCQs</strong> (Randomized order per candidate).</li>
+                            <li>Format: <strong>5 Compulsory Questions</strong> per page.</li>
+                            <li>Duration: <strong>60 Minutes</strong> continuous countdown.</li>
+                            <li><strong>Tab Switch Restriction:</strong> Switching tabs or minimizing the window is recorded. Reaching <strong>3 violations</strong> auto-submits and locks your quiz.</li>
+                        </ul>
+                    </div>
+
+                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-xl text-base shadow-lg shadow-brand-500/20 active:scale-[0.99] transition-all flex items-center justify-center space-x-2">
+                        <span>Start Assessment</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 2: QUIZ INTERFACE ================= -->
+        <section id="quizPage" class="hidden space-y-6">
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-500 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <span>Page <strong id="currentPageNum" class="text-brand-600">1</strong> of <strong id="totalPagesNum">20</strong></span>
+                <span id="answeredCounter" class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md">0 / 100 Answered</span>
+            </div>
+
+            <div id="questionsContainer" class="space-y-6">
+                <!-- Dynamically populated via JS -->
+            </div>
+
+            <div class="flex items-center justify-between gap-3 pt-2">
+                <button id="prevBtn" onclick="navigatePage(-1)" class="w-1/2 py-3 px-4 rounded-xl border border-slate-300 font-bold text-sm text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>Previous</span>
+                </button>
+
+                <button id="nextBtn" onclick="navigatePage(1)" class="w-1/2 py-3 px-4 rounded-xl font-bold text-sm text-white bg-brand-600 hover:bg-brand-700 shadow-md shadow-brand-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center space-x-2">
+                    <span id="nextBtnText">Next 5 Questions</span>
+                    <i id="nextBtnIcon" class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3: SUBMISSION & SUMMARY ================= -->
+        <section id="resultPage" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 text-center space-y-6">
+                <div id="resultIcon" class="inline-flex items-center justify-center w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full text-4xl shadow-sm">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900" id="resultTitle">Assessment Submitted</h2>
+                    <p class="text-xs text-slate-500 mt-1" id="resultSubtitle">Your responses have been successfully recorded.</p>
+                </div>
+
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 grid grid-cols-2 gap-4">
+                    <div class="border-r border-slate-200 pr-2">
+                        <span class="text-xs text-slate-500 uppercase font-semibold block mb-1">Final Score</span>
+                        <div class="text-3xl font-extrabold text-brand-600" id="finalScoreText">0 / 100</div>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 uppercase font-semibold block mb-1">Accuracy</span>
+                        <div class="text-3xl font-extrabold text-slate-800" id="finalAccuracyText">0%</div>
+                    </div>
+                </div>
+
+                <div class="space-y-2 text-left text-xs text-slate-600 border-t border-slate-100 pt-4">
+                    <div class="flex justify-between py-1">
+                        <span>Student Name:</span>
+                        <strong id="summaryCandidateName" class="text-slate-800">-</strong>
+                    </div>
+                    <div class="flex justify-between py-1">
+                        <span>UID:</span>
+                        <strong id="summaryStudentId" class="text-slate-800">-</strong>
+                    </div>
+                    <div class="flex justify-between py-1">
+                        <span>Phone Number:</span>
+                        <strong id="summaryPhone" class="text-slate-800">-</strong>
+                    </div>
+                    <div class="flex justify-between py-1">
+                        <span>Email ID:</span>
+                        <strong id="summaryEmail" class="text-slate-800">-</strong>
+                    </div>
+                    <div class="flex justify-between py-1">
+                        <span>Time Consumed:</span>
+                        <strong id="summaryTimeSpent" class="text-slate-800">0 min</strong>
+                    </div>
+                    <div class="flex justify-between py-1">
+                        <span>Tab Switch Violations:</span>
+                        <strong id="summaryViolations" class="text-slate-800">0</strong>
+                    </div>
+                    <div class="flex justify-between py-1">
+                        <span>Google Sheet Sync Status:</span>
+                        <strong id="syncStatusBadge" class="text-emerald-600 font-semibold"><i class="fa-solid fa-spinner animate-spin mr-1"></i> Syncing...</strong>
+                    </div>
+                </div>
+
+                <button onclick="downloadResultsCSV()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-3 px-4 rounded-xl text-xs transition-all flex items-center justify-center space-x-2 border border-slate-200">
+                    <i class="fa-solid fa-download text-brand-600"></i>
+                    <span>Download Response Backup (CSV)</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Progress Bar -->
+    <footer id="bottomProgressFooter" class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-200 p-3 shadow-lg hidden">
+        <div class="max-w-2xl mx-auto space-y-1.5">
+            <div class="flex justify-between text-xs font-semibold text-slate-600">
+                <span>Quiz Progress</span>
+                <span id="progressBarText">0% Completed</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div id="progressBarFill" class="bg-brand-600 h-2.5 rounded-full transition-all duration-300 w-0"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Anti-Cheat Warning Modal -->
+    <div id="warningModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl space-y-4 border border-rose-100">
+            <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-3xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900">Security Warning!</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                You switched tabs, minimized the browser window, or moved focus away from the test portal.
+            </p>
+            <div class="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-xl text-xs font-bold">
+                Violation Count: <span id="modalViolationCount" class="text-rose-600 font-extrabold text-sm">1</span> / 3 Max
+            </div>
+            <p class="text-xs text-slate-400">Reaching 3 violations will immediately auto-close and submit your examination.</p>
+            <button onclick="acknowledgeWarning()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-sm transition-all">
+                Return to Assessment
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* ================= GOOGLE SHEETS WEBHOOK URL ================= */
+        // Replace this URL with your deployed Google Apps Script Web App URL
+        const GOOGLE_SHEET_WEBHOOK_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+        const QUIZ_CONFIG = {
+            questionsPerPage: 5,
+            totalTimeSeconds: 60 * 60, // 60 minutes
+            maxViolations: 3
+        };
+
+        /* ================= 100 HARDCODED QUESTIONS DATABASE ================= */
+        const ALL_QUESTIONS = [
+            // UNIT I
+            { id: 1, question: "A smart factory transitions from traditional manufacturing by deploying edge sensors. Which operational shift best defines this transition?", options: ["Moving from reactive inspection to real-time predictive analytics", "Replacing human labor completely with basic PLC relays", "Eliminating the need for Aggregate Production Planning", "Switching from custom manufacturing to pure batch-only layout"], correctAnswer: 0, unit: "Unit I" },
+            { id: 2, question: "A discrete assembly plant experiences communication latency between shop-floor sensors and the cloud. Which computing tier resolves local real-time loop control?", options: ["Cloud Data Lake", "Fog / Edge Computing Nodes", "Offsite Enterprise ERP Server", "Manual Operator Logbook"], correctAnswer: 1, unit: "Unit I" },
+            { id: 3, question: "In a Cyber-Physical System (CPS) architecture for an automated IIoT cell, what is the primary function of the physical-to-cyber bridge?", options: ["Converting mechanical tool wear data into digital telemetry for cloud analytics", "Generating manual invoices for raw material suppliers", "Calculating annual depreciation of shop-floor machinery", "Printing paper routing sheets for CNC operators"], correctAnswer: 0, unit: "Unit I" },
+            { id: 4, question: "An IIoT-enabled automotive facility uses a digital twin. If the real CNC spindle temperature rises by 12°C, how does the digital twin respond?", options: ["It waits for weekly shift-end manual logs to update", "It updates the simulation model in real-time to predict remaining tool life", "It shuts down the entire factory power grid automatically", "It deletes historical vibration logs to save memory"], correctAnswer: 1, unit: "Unit I" },
+            { id: 5, question: "Which sequence correctly illustrates the evolution of manufacturing operational philosophies?", options: ["Mass Production → Craft Production → Lean Manufacturing → Smart Connected Manufacturing", "Craft Production → Mass Production → Lean Manufacturing → Smart Connected Manufacturing", "Smart Manufacturing → Craft Production → Mass Production → Lean Manufacturing", "Lean Manufacturing → Craft Production → Smart Manufacturing → Mass Production"], correctAnswer: 1, unit: "Unit I" },
+            { id: 6, question: "A smart factory integrates horizontal and vertical system integration. Vertical integration specifically links which two layers?", options: ["Shop-floor IIoT sensors and top-level ERP/MES business systems", "Supplier material logistics and customer retail portals", "Assembly Robot A and Assembly Robot B on the same line", "Two geographically separate assembly plants"], correctAnswer: 0, unit: "Unit I" },
+            { id: 7, question: "In the context of Industry 4.0, what distinguishes automated manufacturing from smart manufacturing?", options: ["Automated systems follow rigid pre-programmed instructions; smart systems adapt via real-time data feedback", "Automated systems use software; smart systems rely solely on mechanical gears", "Automated systems require no electrical power; smart systems do", "Automated systems operate without human supervision; smart systems require continuous manual control"], correctAnswer: 0, unit: "Unit I" },
+            { id: 8, question: "An IIoT gateway installed on a hydraulic press filters noise from accelerometer data before sending it to the cloud. What is this capability called?", options: ["Data Hoarding", "Local Edge Signal Conditioning and Processing", "Cloud Batch Analytics", "Post-Mortem Failure Analysis"], correctAnswer: 1, unit: "Unit I" },
+            { id: 9, question: "Which objective of Operations Management is directly enhanced when vibration sensors detect motor bearing imbalance before failure?", options: ["Cost reduction through minimized unscheduled downtime", "Increase in worker manual shift hours", "Higher raw material scrap generation", "Elimination of product warranty documentation"], correctAnswer: 0, unit: "Unit I" },
+            { id: 10, question: "In a continuous process industry (e.g., chemical refining), why is real-time sensor feedback preferred over offline laboratory sampling?", options: ["Offline sampling guarantees zero material waste", "Real-time feedback enables closed-loop parameter adjustment before out-of-spec output occurs", "Real-time feedback eliminates the need for mathematical formulas", "Offline sampling provides faster response times than IoT sensors"], correctAnswer: 1, unit: "Unit I" },
+            { id: 11, question: "A flexible manufacturing system (FMS) is best suited for which combination of production volume and product variety?", options: ["Low volume, extremely low variety", "Medium volume, medium to high variety", "High volume, single fixed product variety", "Zero volume, theoretical product variety"], correctAnswer: 1, unit: "Unit I" },
+            { id: 12, question: "In GE's model of the Industrial Internet, which three elements form the core framework?", options: ["Intelligent Machines, Advanced Analytics, Connected People", "Steam Engines, Belts, Manual Gauges", "Paper Routers, Stopwatches, Supervisors", "Desktop PCs, Dial-up Internet, Local Storage"], correctAnswer: 0, unit: "Unit I" },
+            { id: 13, question: "An IIoT system layer responsible for protocol conversion between heterogeneous PLC fieldbuses and MQTT cloud brokers is the:", options: ["Interface / Middleware Layer", "Physical Mechanical Frame Layer", "Customer Marketing Portal", "Manual Accounting Ledger"], correctAnswer: 0, unit: "Unit I" },
+            { id: 14, question: "Why does mass customization present a challenge to traditional rigid assembly lines that smart factories solve?", options: ["It requires switching between different product variants dynamically without long setup delays", "It forces plants to manufacture only one single standard part", "It reduces the total number of sensors required on machines", "It eliminates the need for supply chain inventory tracking"], correctAnswer: 0, unit: "Unit I" },
+            { id: 15, question: "In an IIoT architecture, what role does a Cyber-Physical Production System (CPPS) play on the shop floor?", options: ["Autonomously coordinating machine operations via sensor-actuator feedback loops", "Generating monthly salary slips for shop-floor technicians", "Managing external legal contracts with raw material vendors", "Designing marketing brochures for newly launched products"], correctAnswer: 0, unit: "Unit I" },
+            { id: 16, question: "Which of the following is considered a core design principle of Industry 4.0?", options: ["Decentralized decision-making enabled by real-time data transparency", "Complete removal of network connectivity across assembly lines", "Manual data collection using physical paper clipboards", "Single-purpose dedicated machines with zero software upgrades"], correctAnswer: 0, unit: "Unit I" },
+            { id: 17, question: "How does high data connectivity impact the overall lead time in a smart manufacturing environment?", options: ["It reduces lead time by providing instant visibility into bottlenecks and inventory status", "It increases lead time due to excessive network data transmission", "It has zero impact on operational lead time", "It forces machines to run at 50% lower speeds"], correctAnswer: 0, unit: "Unit I" },
+            { id: 18, question: "A smart factory deploys environmental humidity sensors in a PCB surface-mount assembly room. Why is this IIoT deployment vital?", options: ["Humidity fluctuations alter solder paste viscosity, causing defects if not controlled in real time", "Moisture level directly changes the electrical voltage of the main power grid", "Humidity sensors automatically recalculate operator hourly wages", "PCB boards require 90% humidity to cure properly"], correctAnswer: 0, unit: "Unit I" },
+            { id: 19, question: "In an Operations Strategy framework for a smart factory, 'Agility' refers to:", options: ["The capacity to rapidly reconfigure operations in response to shifting market demands", "The maximum speed at which a forklift moves across the warehouse", "The total weight of raw materials processed per working hour", "The physical size of the factory building envelope"], correctAnswer: 0, unit: "Unit I" },
+            { id: 20, question: "A manufacturing plant installs smart energy meters on all CNC machines. How does this support sustainable operations management?", options: ["By identifying energy spikes and idle-power draw to optimize energy consumption per part", "By doubling the total voltage supplied to mechanical spindles", "By replacing mechanical cutters with high-voltage arc lamps", "By eliminating the need for periodic machine calibration"], correctAnswer: 0, unit: "Unit I" },
+
+            // UNIT II
+            { id: 21, question: "A product development team designs a housing for an IoT edge node. They modify the design so it can be snap-assembled without screws or tools. This is an application of:", options: ["Design for Assembly (DFA)", "Design for Disposal (DFD)", "Design for Recyclability (DFR)", "Design for Reverse Logistics (DFRL)"], correctAnswer: 0, unit: "Unit II" },
+            { id: 22, question: "In Additive Manufacturing (3D Printing), how does the design process differ fundamentally from traditional subtractive CNC machining?", options: ["Parts are built layer-by-layer, allowing complex internal geometries without custom tooling", "Material is cut away from a solid block using rotating cutting bits", "Metal billets are heated and hammered into dies", "Molten metal is forced under high pressure into permanent steel molds"], correctAnswer: 0, unit: "Unit II" },
+            { id: 23, question: "An IIoT sensor casing must undergo rapid prototyping to verify ergonomic hand-grip parameters before mass production. Which technique is most appropriate?", options: ["Fused Deposition Modeling (FDM) 3D Printing", "Heavy Drop- Hammer Forging", "Sand Casting with Wood Patterns", "Continuous Wire Drawing"], correctAnswer: 0, unit: "Unit II" },
+            { id: 24, question: "In a Digital Twin simulation of a new assembly cell, CAD models are linked with kinematic physics engines. What advantage does this offer during process design?", options: ["It allows virtual commissioning and collision detection before physical equipment installation", "It eliminates the need for electrical wiring in the actual factory", "It guarantees 100% reduction in raw material purchase prices", "It replaces all physical safety fences with imaginary software boundaries"], correctAnswer: 0, unit: "Unit II" },
+            { id: 25, question: "A design engineer applies 'Design for Manufacturability' (DFM) guidelines to a smart sensor housing. Which action aligns with DFM principles?", options: ["Minimizing unique part counts and avoiding tight tolerances where unnecessary", "Specifying custom non-standard fasteners for every internal sub-component", "Maximizing the total number of distinct assembly steps", "Using materials that require specialized non-standard cutting tools"], correctAnswer: 0, unit: "Unit II" },
+            { id: 26, question: "During the Maturity stage of a Smart Consumer Device Product Life Cycle (PLC), what is the primary focus of Operations Management?", options: ["Cost optimization, process standardization, and high-yield operational efficiency", "High-risk design exploration and zero-volume market testing", "Immediate line decommissioning and product disposal", "Re-architecting the core technology from scratch"], correctAnswer: 0, unit: "Unit II" },
+            { id: 27, question: "Value Engineering (VE) is conducted on an automated guided vehicle (AGV) drive module. The team identifies a component that costs $45 but contributes no functional value. What is the VE decision?", options: ["Eliminate or redesign the component to lower cost while preserving required functionality", "Double the component's purchase quantity to earn volume discounts", "Increase the retail selling price of the AGV by $45", "Replace the component with a heavier cast-iron equivalent"], correctAnswer: 0, unit: "Unit II" },
+            { id: 28, question: "Ergonomics in smart workspace design utilizes wearable Motion Capture (MoCap) suits on operators. What data do these suits provide to process planners?", options: ["Real-time ergonomic strain vectors and posture analysis to prevent musculoskeletal injuries", "Automatic calculation of income tax deductions for operators", "Direct streaming of operator thoughts to the ERP system", "Measurement of ambient room lighting intensity in lux"], correctAnswer: 0, unit: "Unit II" },
+            { id: 29, question: "Design for Serviceability (DFS) for an industrial IIoT gateway implies:", options: ["Internal modular components are easy to access, diagnose, and replace during field maintenance", "The gateway is permanently sealed in epoxy resin so no internal part can ever be touched", "The gateway requires complex specialized laboratory equipment for simple battery swaps", "The product is designed to fail completely after 30 days of continuous operation"], correctAnswer: 0, unit: "Unit II" },
+            { id: 30, question: "How does CAD software integrated with Product Data Management (PDM) support smart manufacturing?", options: ["By maintaining a single source of truth for 3D engineering models, engineering change orders (ECOs), and BOMs", "By generating automatic commercial invoices for retail customers", "By directly controlling the factory HVAC temperature setpoints", "By replacing physical structural mechanics analysis with random number generators"], correctAnswer: 0, unit: "Unit II" },
+            { id: 31, question: "A smart factory uses generative design software to optimize an aerospace bracket. What is the typical output of a generative design algorithm?", options: ["An organically shaped, lightweight geometry optimized for specific stress loads and material constraints", "A simple rectangular solid block with maximum possible weight", "A 2D hand-drawn schematic diagram on paper", "A written essay describing the history of titanium alloys"], correctAnswer: 0, unit: "Unit II" },
+            { id: 32, question: "In Design for Environment (DFE), why is Life Cycle Assessment (LCA) integrated into early product design?", options: ["To evaluate total environmental impacts from raw material extraction through usage to end-of-life disposal", "To calculate the exact hourly electricity cost of operating a CAD workstation", "To ensure the product packaging uses bright fluorescent colors", "To bypass government environmental safety regulations"], correctAnswer: 0, unit: "Unit II" },
+            { id: 33, question: "Which process selection type is most suitable for producing custom, low-demand smart diagnostic test rigs with unique customer specifications?", options: ["Job Shop Process", "Continuous Flow Process", "Mass Production Assembly Line", "Automated Rigid Transfer Line"], correctAnswer: 0, unit: "Unit II" },
+            { id: 34, question: "Rapid Prototyping (RP) accelerates time-to-market primarily by:", options: ["Allowing physical testing and design validation of physical prototypes within hours of CAD modeling", "Skipping all design testing and moving directly to full-scale mass production", "Eliminating the need for CAD software in engineering design", "Forcing all prototype parts to be hand-machined by toolmakers"], correctAnswer: 0, unit: "Unit II" },
+            { id: 35, question: "A digital simulation tool evaluates a robot assembly cell work envelope. What key operational metric is optimized before purchasing physical hardware?", options: ["Cycle time, robot reachability, and collision-free path trajectories", "Total factory real-estate property tax", "Hourly wage rate of the maintenance technician", "Fiber optic cable color coding standards"], correctAnswer: 0, unit: "Unit II" },
+            { id: 36, question: "Why is modular product design advantageous for automated smart assembly lines?", options: ["It enables easy customization by combining standardized sub-assemblies on the same main line", "It requires every single product variant to have a completely separate factory building", "It increases total assembly time by introducing duplicate structural brackets", "It prevents automated pick-and-place robots from gripping sub-assemblies"], correctAnswer: 0, unit: "Unit II" },
+            { id: 37, question: "In the context of Additive Manufacturing, what is a primary constraint when compared to high-volume injection molding?", options: ["Higher per-unit production time and cost for extremely large production batch volumes", "Inability to create complex 3D lattice geometries", "Requirement for million-dollar steel tooling molds for every part design", "Complete incompatibility with digital CAD file formats"], correctAnswer: 0, unit: "Unit II" },
+            { id: 38, question: "A smart factory applies 'Design for X' (DFX). What does the variable 'X' represent in this context?", options: ["A specific performance dimension or life-cycle parameter such as quality, assembly, or environment", "An unknown mathematical variable that must never be defined", "The total number of CNC machines installed on the shop floor", "The physical X-coordinate on the factory floor grid plan"], correctAnswer: 0, unit: "Unit II" },
+            { id: 39, question: "What function does a Computer-Aided Process Planning (CAPP) system serve in bridging CAD and CAM?", options: ["Autonomously generating machining operations, tool paths, and routing sequences from CAD geometry", "Printing barcode labels for final retail shipping boxes", "Calculating corporate tax liabilities for manufacturing equipment", "Managing employee shift vacation schedules"], correctAnswer: 0, unit: "Unit II" },
+            { id: 40, question: "An IIoT sensor manufacturer uses digital simulation to model heat dissipation in an edge processor enclosure. This thermal simulation helps avoid:", options: ["Overheating and premature component failure without building multiple physical test rigs", "Increasing the physical thickness of aluminum heat sinks by 500%", "Installing thermal sensors on the manufactured edge processor", "Hiring thermal design engineers for the product development team"], correctAnswer: 0, unit: "Unit II" },
+
+            // UNIT III
+            { id: 41, question: "A smart factory uses exponential smoothing (α = 0.3) for demand forecasting. If actual demand in Week 1 was 120 units and forecasted demand was 100 units, what is the forecast for Week 2?", options: ["106 units", "120 units", "110 units", "100 units"], correctAnswer: 0, unit: "Unit III" },
+            { id: 42, question: "An IIoT telemetry pipeline streams real-time consumption data from 5,000 smart water meters. How does this data transform traditional forecasting?", options: ["Shifts forecasting from monthly historical batch estimates to continuous, data-driven real-time demand sensing", "Eliminates the need for any data processing algorithms", "Guarantees 100% zero forecast error across all future years", "Replaces all quantitative forecasting models with qualitative opinion panels"], correctAnswer: 0, unit: "Unit III" },
+            { id: 43, question: "A facility planner evaluates two candidate plant locations (A and B) using the factor rating method. Location A scores 82 with a factor weight sum of 1.0; Location B scores 74. Which location is preferred?", options: ["Location A because it achieves a higher total weighted score", "Location B because lower scores indicate lower plant footprint cost", "Location B because score differences under 10 are ignored", "Neither location; factor rating cannot be applied to facility location decisions"], correctAnswer: 0, unit: "Unit III" },
+            { id: 44, question: "Calculate the Mean Absolute Deviation (MAD) for three periods where forecast errors (At - Ft) are +8, -12, and +4.", options: ["8.0 units", "0.0 units", "24.0 units", "6.0 units"], correctAnswer: 0, unit: "Unit III" },
+            { id: 45, question: "If the Mean Squared Error (MSE) for a forecasting model over 4 periods is 100 unit², what does this metric penalize more heavily than MAD?", options: ["Large individual forecast errors/outliers due to the squaring effect", "Positive forecast errors over negative forecast errors", "Errors that occur in the first period of the forecast horizon", "Small fractional errors between 0 and 1"], correctAnswer: 0, unit: "Unit III" },
+            { id: 46, question: "A smart manufacturing plant calculates its Design Capacity as 500 units/day and Effective Capacity as 400 units/day. If actual output is 360 units/day, what is the Efficiency?", options: ["90%", "72%", "80%", "111%"], correctAnswer: 0, unit: "Unit III" },
+            { id: 47, question: "In the scenario from Question 46, what is the Utilization of the plant?", options: ["72%", "90%", "80%", "125%"], correctAnswer: 0, unit: "Unit III" },
+            { id: 48, question: "Which qualitative forecasting method uses a panel of experts through iterative, anonymous questionnaire rounds to reach a consensus?", options: ["Delphi Method", "Simple Moving Average", "Linear Regression Analysis", "Exponential Smoothing"], correctAnswer: 0, unit: "Unit III" },
+            { id: 49, question: "A factory layout planner uses Systematic Layout Planning (SLP). What chart is used to depict spatial closeness relationships between departments?", options: ["Muther's Relationship Chart (Activity Relationship Chart)", "Gantt Chart", "X-bar Control Chart", "Cause-and-Effect Fishbone Diagram"], correctAnswer: 0, unit: "Unit III" },
+            { id: 50, question: "In a digital factory layout planning tool, digital 3D models of AGVs and robotic cells are simulated. What is the chief benefit?", options: ["Identifying spatial bottlenecks, material flow congestion, and equipment footprint before physical installation", "Automatically calculating employee monthly withholding taxes", "Replacing physical material handling equipment with virtual software loops", "Eliminating the requirement for electrical grounding on the shop floor"], correctAnswer: 0, unit: "Unit III" },
+            { id: 51, question: "A plant location evaluation involves high fixed costs and low variable costs. This profile is most suitable for:", options: ["High-volume, standardized mass production facility", "Low-volume, specialized custom repair shop", "Seasonal pop-up manufacturing cell", "Manual prototype crafting lab"], correctAnswer: 0, unit: "Unit III" },
+            { id: 52, question: "Tracking Signal in forecasting is defined as the ratio of Cumulative Sum of Forecast Errors (CFE) to:", options: ["Mean Absolute Deviation (MAD)", "Mean Squared Error (MSE)", "Total Production Volume", "Actual Demand"], correctAnswer: 0, unit: "Unit III" },
+            { id: 53, question: "If a forecasting model consistently underestimates demand, resulting in a large positive Cumulative Forecast Error (CFE), what does the Tracking Signal indicate?", options: ["The forecast model exhibits a persistent positive bias and needs recalibration", "The forecast model is perfectly accurate", "The forecast errors are normally distributed around zero", "The actual demand has dropped to zero"], correctAnswer: 0, unit: "Unit III" },
+            { id: 54, question: "Which facility layout type arranges equipment according to the sequence of operations required for a specific standardized product line?", options: ["Product (Line) Layout", "Process (Functional) Layout", "Fixed-Position Layout", "Cellular Manufacturing Layout"], correctAnswer: 0, unit: "Unit III" },
+            { id: 55, question: "In a Process Layout (Functional Layout), machines are grouped by:", options: ["Similar functions or process capabilities (e.g., all lathes in one section)", "Specific product assembly sequences", "Final customer delivery zip codes", "Color of machine outer enclosures"], correctAnswer: 0, unit: "Unit III" },
+            { id: 56, question: "A heavy shipbuilding yard or aircraft assembly building where the core product remains static while machines and workers move to it uses a:", options: ["Fixed-Position Layout", "Flow-Shop Product Layout", "High-Speed Continuous Transfer Line", "Flexible Manufacturing Cell"], correctAnswer: 0, unit: "Unit III" },
+            { id: 57, question: "Cellular Manufacturing groups distinct machines into semi-autonomous cells based on:", options: ["Group Technology (GT) part families with similar design and manufacturing attributes", "Machine procurement purchase order dates", "Operator seniority levels", "Random alphabetical equipment tags"], correctAnswer: 0, unit: "Unit III" },
+            { id: 58, question: "An IIoT-driven indoor location system (RTLS) uses Ultra-Wideband (UWB) tags on forklifts. How does this enhance smart facility layout management?", options: ["By analyzing real-time material traffic heatmaps to optimize layout aisles and reduce transit bottlenecks", "By automatically painting floor lines on the concrete slab", "By controlling forklift engine ignition timing directly from cloud servers", "By eliminating the requirement for forklift safety drivers"], correctAnswer: 0, unit: "Unit III" },
+            { id: 59, question: "When demand exhibits a clear upward linear trend, which quantitative method is superior to a simple 3-month moving average?", options: ["Trend-Adjusted Exponential Smoothing (Holt’s Method) or Linear Regression", "Simple 1-Period Naive Forecast", "Qualitative Executive Opinion", "Weighted Moving Average with equal weights"], correctAnswer: 0, unit: "Unit III" },
+            { id: 60, question: "What role does Big Data Analytics play in smart capacity planning?", options: ["Integrating external market signals, sensor utilization logs, and maintenance predictions to dynamically adjust line capacity", "Generating paper work orders for shop-floor supervisors", "Guaranteeing that machine capacity will never experience electrical power outages", "Forcing all capacity calculations to be executed on manual abacuses"], correctAnswer: 0, unit: "Unit III" },
+
+            // UNIT IV
+            { id: 61, question: "In Production Planning and Control (PPC), which function is responsible for converting the Aggregate Production Plan into detailed specific end-item operational build schedules?", options: ["Master Production Schedule (MPS)", "Material Safety Data Sheet (MSDS)", "Capital Budgeting Report", "Enterprise Quality Audit"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 62, question: "An automated CNC cell uses Johnson's Rule to sequence 5 jobs across 2 sequential machines (Machine 1 then Machine 2). What is the primary objective of Johnson's Rule?", options: ["Minimizing total makespan (completion time) for the entire set of jobs", "Maximizing total energy consumption across machines", "Equalizing the processing times of all jobs to match the highest job", "Eliminating tool changes on Machine 1 completely"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 63, question: "A Manufacturing Execution System (MES) sits directly between which two organizational software layers?", options: ["Shop-floor industrial control automation (PLCs/SCADA) and Enterprise Resource Planning (ERP)", "Corporate Marketing Software and Customer Retail Web Stores", "Facility Real Estate Management and External Legal Databases", "HR Payroll Software and Local Municipal Tax Portals"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 64, question: "In a PERT network, an activity has Optimistic time (a = 2 hrs), Most Likely time (m = 5 hrs), and Pessimistic time (b = 14 hrs). What is its Expected Duration (te)?", options: ["6.0 hours", "7.0 hours", "5.0 hours", "11.0 hours"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 65, question: "Calculate the Variance (σ²) for the PERT activity described in Question 64.", options: ["4.0", "2.0", "12.0", "1.0"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 66, question: "On a CPM network diagram, the Critical Path is defined as:", options: ["The longest continuous path of dependent activities that determines the minimum total project completion time", "The path with the maximum amount of total slack/float time", "The shortest path through the network diagram", "The path containing only non-critical maintenance tasks"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 67, question: "An IIoT sensor network streams real-time cycle times from 10 automated stations directly to an MES dashboard. If Station 4 experiences a micro-stoppage, what capability allows immediate operational rescheduling?", options: ["Real-Time Dynamic Dispatching / Rescheduling in MES", "Manual paper shift hand-over reporting", "End-of-month financial audit reconciliation", "Annual physical inventory counting"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 68, question: "Aggregate Production Planning (APP) operates over which planning horizon?", options: ["Intermediate range (typically 3 to 18 months)", "Short range (daily to weekly operational shifts)", "Long range (5 to 10 years strategic facility building)", "Ultra-short range (millisecond PLC control loops)"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 69, question: "A pure 'Chase' Aggregate Planning Strategy adjusts to demand fluctuations primarily by:", options: ["Varying workforce size through hiring/layoffs or adjusting production rates to match demand in each period", "Keeping production rate perfectly constant and absorbing demand spikes with finished goods inventory", "Subcontracting 100% of production during all periods", "Ignoring customer demand and running machines at 100% capacity continuous"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 70, question: "A pure 'Level' Aggregate Planning Strategy maintains a constant workforce and production rate. What absorbs the difference during periods of low demand?", options: ["Accumulation of finished goods inventory", "Immediate termination of 50% of the assembly line operators", "Total shutdown of shop-floor electrical supply", "Instant lowering of product selling prices to zero"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 71, question: "In priority sequencing rules for shop-floor scheduling, 'EDD' stands for:", options: ["Earliest Due Date", "Earliest Delivery Duration", "Engine Design Document", "Estimated Downtime Duration"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 72, question: "A job dispatching rule calculates Critical Ratio (CR) as (Time Remaining to Due Date) / (Work Remaining). If a job has a CR of 0.7, what is its operational status?", options: ["The job is behind schedule and runs a high risk of being late", "The job is exactly on schedule with zero risk", "The job is far ahead of schedule", "The job has been completed and shipped"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 73, question: "If a job's Critical Ratio (CR) is calculated as 1.5, what does this indicate to the shop-floor dispatcher?", options: ["The job has slack time and is currently ahead of schedule", "The job is critically overdue and must expedite immediately", "The job must be scrapped immediately", "The job requires double operator staffing"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 74, question: "Which PPC function is responsible for physically releasing official work authorization orders to the shop floor?", options: ["Dispatching", "Aggregate Planning", "Long-term Forecasting", "Product Value Analysis"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 75, question: "How does an IIoT-enabled RFID system support real-time Work-in-Progress (WIP) tracking?", options: ["By automatically updating part positions, station entry times, and buffer statuses in the MES as tags pass readers", "By increasing the physical weight of manufactured parts", "By replacing computer databases with physical paper traveler cards", "By preventing parts from moving through automated conveyors"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 76, question: "What is the primary difference between CPM and PERT project management techniques?", options: ["CPM assumes deterministic activity times; PERT accounts for probabilistic activity time distributions", "CPM is used only for software; PERT is used only for civil construction", "CPM requires computers; PERT is executed purely using paper clipboards", "CPM has no critical path; PERT has multiple critical paths"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 77, question: "Float (or Slack) for an activity in a CPM project network is calculated as:", options: ["LS - ES (Late Start minus Early Start) or LF - EF (Late Finish minus Early Finish)", "EF - ES", "LS + LF", "a + b + m"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 78, question: "In an automated smart assembly line, what is the primary role of a Closed-Loop Cyber-Physical Control System?", options: ["Continuous monitoring of sensor outputs to adjust actuator inputs in real time without human intervention", "Writing corporate annual sustainability reports", "Manual entry of part serial numbers by floor supervisors", "Printing hard-copy shipping invoices at shift end"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 79, question: "An operator views an MES visual management interface showing Overall Equipment Effectiveness (OEE). The display highlights a red alarm for 'Speed Loss'. What causes this loss?", options: ["Equipment operating at lower speeds than its nameplate design capability", "Total catastrophic motor destruction due to fire", "Unplanned long breakdown duration exceeding 2 hours", "Defective raw materials rejected at receiving inspection"], correctAnswer: 0, unit: "Unit IV" },
+            { id: 80, question: "Why is Process Planning considered a crucial bridge between Product Design and Production Control?", options: ["It defines the exact sequence of manufacturing operations, tooling, machines, and execution parameters required", "It sets employee hourly wage compensation structures", "It markets finished products to international retail buyers", "It calculates corporate income tax obligations"], correctAnswer: 0, unit: "Unit IV" },
+
+            // UNIT V
+            { id: 81, question: "Calculate Overall Equipment Effectiveness (OEE) given: Availability = 90%, Performance = 80%, Quality = 95%.", options: ["68.4%", "88.3%", "95.0%", "72.0%"], correctAnswer: 0, unit: "Unit V" },
+            { id: 82, question: "A manufacturing line produces 10,000 parts. Inspection reveals 20 defective parts. Each part has 4 critical defect opportunities. What is the Defects Per Million Opportunities (DPMO)?", options: ["500 DPMO", "2,000 DPMO", "50 DPMO", "5,000 DPMO"], correctAnswer: 0, unit: "Unit V" },
+            { id: 83, question: "A CNC turning process has USL = 20.5 mm, LSL = 19.5 mm, process mean (μ) = 20.0 mm, and standard deviation (σ) = 0.1 mm. What is the Process Capability index (Cp)?", options: ["1.67", "1.00", "0.83", "2.50"], correctAnswer: 0, unit: "Unit V" },
+            { id: 84, question: "In the scenario from Question 83, if the process mean shifts to μ = 20.2 mm while limits and σ remain unchanged, calculate Cpk.", options: ["1.00", "1.67", "1.33", "0.67"], correctAnswer: 0, unit: "Unit V" },
+            { id: 85, question: "An annual demand (D) for a component is 10,000 units. Ordering cost (S) is $50 per order, and holding cost (H) is $1.00 per unit/year. Calculate Economic Order Quantity (EOQ).", options: ["1,000 units", "500 units", "2,000 units", "100 units"], correctAnswer: 0, unit: "Unit V" },
+            { id: 86, question: "In the EOQ model calculated in Question 85, what is the total annual ordering cost at the optimal order quantity of 1,000 units?", options: ["$500", "$1,000", "$250", "$5,000"], correctAnswer: 0, unit: "Unit V" },
+            { id: 87, question: "Total Productive Maintenance (TPM) relies on 8 foundational pillars. What is the core concept behind 'Autonomous Maintenance' (Jishu Hozen)?", options: ["Machine operators perform routine cleaning, lubrication, and basic inspections on their own equipment", "Specialized external contractors handle all maintenance tasks exclusively", "Machines are run continuously until complete mechanical failure occurs", "Maintenance is scheduled only during annual plant shutdowns"], correctAnswer: 0, unit: "Unit V" },
+            { id: 88, question: "Six Sigma methodology utilizes the DMAIC framework for process improvement. What does DMAIC stand for?", options: ["Define, Measure, Analyze, Improve, Control", "Design, Manufacture, Assemble, Inspect, Clean", "Develop, Model, Automate, Integrate, Calibrate", "Direct, Monitor, Allocate, Implement, Check"], correctAnswer: 0, unit: "Unit V" },
+            { id: 89, question: "A Statistical Process Control (SPC) X-bar chart monitors process average. If a sample point falls outside the Upper Control Limit (UCL), what does it indicate?", options: ["An assignable cause of variation is present and requires immediate process investigation", "The process is exhibiting normal random variation", "The process capability Cp has instantly doubled", "The product specifications have been widened automatically"], correctAnswer: 0, unit: "Unit V" },
+            { id: 90, question: "In a Just-in-Time (JIT) manufacturing system using Kanban cards, what type of production scheduling mechanism is implemented?", options: ["Pull System", "Push System", "Batch-and-Queue Buffer Strategy", "Random Dispatching System"], correctAnswer: 0, unit: "Unit V" },
+            { id: 91, question: "Material Requirements Planning (MRP I) relies on three primary inputs: Master Production Schedule (MPS), Inventory Status File, and:", options: ["Bill of Materials (BOM)", "Employee Payroll Records", "Customer Satisfaction Survey Results", "Equipment Maintenance Logbooks"], correctAnswer: 0, unit: "Unit V" },
+            { id: 92, question: "How does Enterprise Resource Planning (ERP) differ fundamentally from standalone Material Requirements Planning (MRP I)?", options: ["ERP integrates cross-functional business modules across the enterprise", "ERP controls physical CNC spindle motor speeds directly", "ERP eliminates the requirement for inventory tracking", "ERP is used exclusively by small retail stores"], correctAnswer: 0, unit: "Unit V" },
+            { id: 93, question: "An IIoT smart sensor installed on a gearbox measures vibration spectral frequencies. When high-frequency spikes appear, predictive algorithms forecast failure. This strategy is known as:", options: ["Condition-Based / Predictive Maintenance (PdM)", "Reactive Breakdown Run-to-Failure Maintenance", "Time-Based Periodic Preventive Maintenance", "Emergency Post-Crash Repair"], correctAnswer: 0, unit: "Unit V" },
+            { id: 94, question: "In Quality 4.0, how are automated optical inspection (AOI) cameras integrated into high-speed assembly lines superior to manual inspection?", options: ["AOI cameras perform 100% inline non-contact visual defect detection at line speed with high repeatability", "AOI cameras automatically repair damaged physical steel components", "AOI cameras remove the necessity for statistical process control limits", "AOI cameras operate without electrical power connections"], correctAnswer: 0, unit: "Unit V" },
+            { id: 95, question: "A factory implements an active RFID asset tracking system for materials management. What operational advantage does active RFID offer over passive barcodes?", options: ["Real-time automated location tracking without requiring direct line-of-sight manual scanning", "Complete elimination of raw material purchasing costs", "Capability to store physical metal parts inside the RFID tag memory", "Zero reliance on wireless radio frequencies"], correctAnswer: 0, unit: "Unit V" },
+            { id: 96, question: "In the Cost of Quality (COQ) PAF model, costs associated with employee quality training, process design reviews, and preventive maintenance belong to:", options: ["Prevention Costs", "Appraisal Costs", "Internal Failure Costs", "External Failure Costs"], correctAnswer: 0, unit: "Unit V" },
+            { id: 97, question: "In the PAF Cost of Quality model, scrap generation, rework hours, and internal re-inspection efforts are classified as:", options: ["Internal Failure Costs", "External Failure Costs", "Prevention Costs", "Appraisal Costs"], correctAnswer: 0, unit: "Unit V" },
+            { id: 98, question: "In statistical process control, an R-chart (Range chart) is used to monitor and evaluate process:", options: ["Dispersion or variability within sub-group samples", "Mean central tendency across all historical shifts", "Total monthly finished goods production volume", "Percentage of defective customer shipments"], correctAnswer: 0, unit: "Unit V" },
+            { id: 99, question: "In a Lean production environment, 'Poka-Yoke' refers to:", options: ["A fail-safe or mistake-proofing mechanism designed to prevent human error during assembly", "A complex statistical equation for long-term demand forecasting", "An annual employee performance appraisal system", "A high-pressure hydraulic clamping system"], correctAnswer: 0, unit: "Unit V" },
+            { id: 100, question: "What role does an IIoT-driven Digital Dashboard play in modern Total Quality Management (TQM)?", options: ["Aggregating real-time quality metrics, SPC charts, and defect Pareto analysis across all production lines for data-driven decisions", "Automatically ordering raw materials from vendors without financial budgets", "Writing legal patent documentation for product designs", "Replacing physical quality standards with arbitrary color schemes"], correctAnswer: 0, unit: "Unit V" }
+        ];
+
+        /* ================= STATE VARIABLES ================= */
+        let quizQuestions = [];
+        let userAnswers = {};
+        let currentPage = 1;
+        let totalPages = 20;
+        let timerSecondsRemaining = QUIZ_CONFIG.totalTimeSeconds;
+        let timerInterval = null;
+        let isTimerPaused = false;
+        let tabSwitchViolations = 0;
+        let quizSubmitted = false;
+
+        window.onload = function() {
+            setupVisibilityListener();
+        };
+
+        /* ================= FISHER-YATES SHUFFLE ================= */
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        /* ================= START QUIZ ================= */
+        function handleStartQuiz(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('studentName').value.trim();
+            const id = document.getElementById('studentId').value.trim();
+            const phone = document.getElementById('studentPhone').value.trim();
+            const email = document.getElementById('studentEmail').value.trim();
+
+            if(!name || !id || !phone || !email) {
+                alert('Please complete all student detail fields.');
+                return;
+            }
+
+            // Shuffle questions uniquely for this candidate
+            quizQuestions = shuffleArray(ALL_QUESTIONS);
+
+            // Switch UI Views
+            document.getElementById('registrationPage').classList.add('hidden');
+            document.getElementById('quizPage').classList.remove('hidden');
+            document.getElementById('headerStats').classList.remove('hidden');
+            document.getElementById('bottomProgressFooter').classList.remove('hidden');
+
+            renderPage(1);
+            startTimer();
+        }
+
+        /* ================= RENDER PAGE (5 QUESTIONS) ================= */
+        function renderPage(page) {
+            isTimerPaused = true;
+            currentPage = page;
+            document.getElementById('currentPageNum').innerText = currentPage;
+
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            const startIndex = (page - 1) * QUIZ_CONFIG.questionsPerPage;
+            const endIndex = Math.min(startIndex + QUIZ_CONFIG.questionsPerPage, quizQuestions.length);
+            const currentQuestions = quizQuestions.slice(startIndex, endIndex);
+
+            currentQuestions.forEach((q, idx) => {
+                const globalIndex = startIndex + idx + 1;
+                const questionCard = document.createElement('div');
+                questionCard.className = 'bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-3';
+                
+                const isAnswered = userAnswers[q.id] !== undefined;
+                questionCard.innerHTML = `
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="inline-block bg-brand-50 text-brand-700 font-bold px-2.5 py-1 rounded-lg text-xs">
+                                Q${globalIndex}
+                            </span>
+                            <span class="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">
+                                ${q.unit}
+                            </span>
+                        </div>
+                        <span id="statusBadge_${q.id}" class="text-[11px] font-semibold px-2 py-0.5 rounded-full ${isAnswered ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-500'}">
+                            ${isAnswered ? '<i class="fa-solid fa-check mr-1"></i>Answered' : 'Required'}
+                        </span>
+                    </div>
+                    <p class="text-sm font-bold text-slate-800 leading-snug">${q.question}</p>
+                    <div class="space-y-2 pt-1">
+                        ${q.options.map((opt, oIdx) => {
+                            const isChecked = userAnswers[q.id] === oIdx;
+                            return `
+                                <label onclick="selectAnswer(${q.id}, ${oIdx})" class="flex items-center p-3 rounded-xl border text-xs font-medium transition-all cursor-pointer ${isChecked ? 'bg-brand-50 border-brand-500 text-brand-900 ring-1 ring-brand-500' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'}">
+                                    <input type="radio" name="question_${q.id}" value="${oIdx}" ${isChecked ? 'checked' : ''} class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-3 leading-tight">${opt}</span>
+                                </label>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                container.appendChild(questionCard);
+            });
+
+            updateNavigationButtons();
+            updateProgress();
+
+            setTimeout(() => { isTimerPaused = false; }, 150);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* ================= ANSWER LOGIC ================= */
+        function selectAnswer(questionId, optionIndex) {
+            if(quizSubmitted) return;
+
+            userAnswers[questionId] = optionIndex;
+
+            const badge = document.getElementById(`statusBadge_${questionId}`);
+            if(badge) {
+                badge.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600';
+                badge.innerHTML = '<i class="fa-solid fa-check mr-1"></i>Answered';
+            }
+
+            updateNavigationButtons();
+            updateProgress();
+        }
+
+        function isCurrentPageFullyAnswered() {
+            const startIndex = (currentPage - 1) * QUIZ_CONFIG.questionsPerPage;
+            const endIndex = Math.min(startIndex + QUIZ_CONFIG.questionsPerPage, quizQuestions.length);
+            const currentQuestions = quizQuestions.slice(startIndex, endIndex);
+
+            return currentQuestions.every(q => userAnswers[q.id] !== undefined);
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const nextBtnText = document.getElementById('nextBtnText');
+            const nextBtnIcon = document.getElementById('nextBtnIcon');
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = !isCurrentPageFullyAnswered();
+
+            if (currentPage === totalPages) {
+                nextBtnText.innerText = 'Submit Assessment';
+                nextBtnIcon.className = 'fa-solid fa-paper-plane';
+            } else {
+                nextBtnText.innerText = 'Next 5 Questions';
+                nextBtnIcon.className = 'fa-solid fa-chevron-right';
+            }
+        }
+
+        function navigatePage(direction) {
+            const newPage = currentPage + direction;
+
+            if (direction === 1 && !isCurrentPageFullyAnswered()) {
+                alert('All 5 questions on this page are compulsory. Please answer all questions before proceeding.');
+                return;
+            }
+
+            if (newPage > totalPages) {
+                submitQuiz('manual');
+                return;
+            }
+
+            if (newPage >= 1 && newPage <= totalPages) {
+                renderPage(newPage);
+            }
+        }
+
+        function updateProgress() {
+            const totalAnswered = Object.keys(userAnswers).length;
+            const percentage = Math.round((totalAnswered / quizQuestions.length) * 100);
+
+            document.getElementById('answeredCounter').innerText = `${totalAnswered} / ${quizQuestions.length} Answered`;
+            document.getElementById('progressBarText').innerText = `${percentage}% Completed`;
+            document.getElementById('progressBarFill').style.width = `${percentage}%`;
+        }
+
+        /* ================= TIMER ENGINE ================= */
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                if (!isTimerPaused && !quizSubmitted) {
+                    timerSecondsRemaining--;
+                    updateTimerDisplay();
+
+                    if (timerSecondsRemaining <= 0) {
+                        clearInterval(timerInterval);
+                        alert('60-Minute Duration Completed! Submitting your examination.');
+                        submitQuiz('timeout');
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSecondsRemaining / 60);
+            const seconds = timerSecondsRemaining % 60;
+            const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('timerText').innerText = formatted;
+
+            if (timerSecondsRemaining < 300) {
+                document.getElementById('timerBadge').className = "flex items-center space-x-1.5 bg-rose-600 text-white px-3 py-1 rounded-full text-xs font-bold font-mono tracking-wider shadow-inner animate-pulse";
+            }
+        }
+
+        /* ================= ANTI-CHEAT TAB SWITCH DETECTOR ================= */
+        function setupVisibilityListener() {
+            let blurTriggered = false;
+
+            const triggerViolation = () => {
+                if (quizSubmitted || document.getElementById('registrationPage').classList.contains('hidden') === false) return;
+
+                tabSwitchViolations++;
+                document.getElementById('warningCountText').innerText = `${tabSwitchViolations}/${QUIZ_CONFIG.maxViolations}`;
+                document.getElementById('modalViolationCount').innerText = tabSwitchViolations;
+
+                if (tabSwitchViolations >= QUIZ_CONFIG.maxViolations) {
+                    document.getElementById('warningModal').classList.add('hidden');
+                    alert('Maximum tab switch limit (3) exceeded! The quiz is auto-submitting.');
+                    submitQuiz('violation_exceeded');
+                } else {
+                    document.getElementById('warningModal').classList.remove('hidden');
+                }
+            };
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) triggerViolation();
+            });
+
+            window.addEventListener('blur', () => {
+                if (!blurTriggered) {
+                    blurTriggered = true;
+                    triggerViolation();
+                    setTimeout(() => { blurTriggered = false; }, 1000);
+                }
+            });
+        }
+
+        function acknowledgeWarning() {
+            document.getElementById('warningModal').classList.add('hidden');
+        }
+
+        /* ================= SUBMISSION & BACKEND SYNC ================= */
+        function submitQuiz(reason = 'manual') {
+            if (quizSubmitted) return;
+            quizSubmitted = true;
+            clearInterval(timerInterval);
+
+            let correctCount = 0;
+            quizQuestions.forEach(q => {
+                if (userAnswers[q.id] === q.correctAnswer) {
+                    correctCount++;
+                }
+            });
+
+            const totalScore = correctCount;
+            const accuracy = Math.round((correctCount / quizQuestions.length) * 100);
+            const timeSpentSeconds = QUIZ_CONFIG.totalTimeSeconds - timerSecondsRemaining;
+            const timeSpentMinutes = Math.ceil(timeSpentSeconds / 60);
+
+            // Hide Quiz Interface, Show Results
+            document.getElementById('quizPage').classList.add('hidden');
+            document.getElementById('bottomProgressFooter').classList.add('hidden');
+            document.getElementById('headerStats').classList.add('hidden');
+            document.getElementById('resultPage').classList.remove('hidden');
+
+            document.getElementById('finalScoreText').innerText = `${totalScore} / ${quizQuestions.length}`;
+            document.getElementById('finalAccuracyText').innerText = `${accuracy}%`;
+            document.getElementById('summaryCandidateName').innerText = document.getElementById('studentName').value;
+            document.getElementById('summaryStudentId').innerText = document.getElementById('studentId').value;
+            document.getElementById('summaryPhone').innerText = document.getElementById('studentPhone').value;
+            document.getElementById('summaryEmail').innerText = document.getElementById('studentEmail').value;
+            document.getElementById('summaryTimeSpent').innerText = `${timeSpentMinutes} mins`;
+            document.getElementById('summaryViolations').innerText = tabSwitchViolations;
+
+            if (reason === 'violation_exceeded') {
+                document.getElementById('resultTitle').innerText = 'Quiz Locked: Violation Exceeded';
+                document.getElementById('resultTitle').className = 'text-2xl font-bold text-rose-600';
+                document.getElementById('resultIcon').className = 'inline-flex items-center justify-center w-20 h-20 bg-rose-100 text-rose-600 rounded-full text-4xl shadow-sm';
+                document.getElementById('resultIcon').innerHTML = '<i class="fa-solid fa-lock"></i>';
+            }
+
+            // Sync Payload to Google Sheets Script Webhook
+            syncToGoogleSheets({
+                timestamp: new Date().toISOString(),
+                studentName: document.getElementById('studentName').value,
+                uid: document.getElementById('studentId').value,
+                phone: document.getElementById('studentPhone').value,
+                email: document.getElementById('studentEmail').value,
+                score: `${totalScore} / ${quizQuestions.length}`,
+                percentage: accuracy,
+                timeSpentMinutes: timeSpentMinutes,
+                tabSwitches: tabSwitchViolations,
+                answers: userAnswers
+            });
+        }
+
+        function syncToGoogleSheets(payload) {
+            const syncBadge = document.getElementById('syncStatusBadge');
+
+            if (!GOOGLE_SHEET_WEBHOOK_URL || GOOGLE_SHEET_WEBHOOK_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE") {
+                syncBadge.className = 'text-amber-600 font-semibold';
+                syncBadge.innerHTML = '<i class="fa-solid fa-circle-info mr-1"></i> Saved locally (Google Sheet URL not configured)';
+                return;
+            }
+
+            fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                syncBadge.className = 'text-emerald-600 font-semibold';
+                syncBadge.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Recorded in Google Sheet';
+            })
+            .catch(error => {
+                console.error('Sync Error:', error);
+                syncBadge.className = 'text-rose-600 font-semibold';
+                syncBadge.innerHTML = '<i class="fa-solid fa-xmark mr-1"></i> Network Sync Failed';
+            });
+        }
+
+        /* ================= CSV BACKUP EXPORT ================= */
+        function downloadResultsCSV() {
+            const name = document.getElementById('studentName').value || "Student";
+            const id = document.getElementById('studentId').value || "UID";
+            
+            const rows = [
+                ["Student Name", name],
+                ["UID", id],
+                ["Phone Number", document.getElementById('studentPhone').value],
+                ["Email", document.getElementById('studentEmail').value],
+                ["Score", document.getElementById('finalScoreText').innerText],
+                ["Accuracy", document.getElementById('finalAccuracyText').innerText],
+                ["Tab Switch Violations", tabSwitchViolations],
+                [],
+                ["Q.No", "Question Statement", "Selected Option Index", "Correct Option Index", "Result"]
+            ];
+
+            quizQuestions.forEach((q, idx) => {
+                const userSel = userAnswers[q.id];
+                const isCorrect = userSel === q.correctAnswer;
+                rows.push([
+                    idx + 1,
+                    `"${q.question.replace(/"/g, '""')}"`,
+                    userSel !== undefined ? userSel : "Unanswered",
+                    q.correctAnswer,
+                    isCorrect ? "CORRECT" : "INCORRECT"
+                ]);
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Quiz_Result_${id}_${name.replace(/\s+/g, '_')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
